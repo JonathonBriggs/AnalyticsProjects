@@ -1,0 +1,205 @@
+---
+title: "Cyclistic Data Review"
+author: "Jonathon Briggs"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## Cyclistic Data Review  
+**Research Question:** How do annual members and casual riders use Cicylistic bikes differently?  
+**Business Task:** Identify key differences between annual membership accounts and casual rider purchases, then compile actionable insights and hypotheses that can guide next steps in the market expansion process
+
+### Data Sources  
+Cyclistic data was collected at the following [link](https://divvy-tripdata.s3.amazonaws.com/index.html)  
+
+Cyclistic Station Data was collect from 2 files
+* Divvy_Stations_2014-Q1Q2.xlsx  
+* Divvy_Stations_2014-Q3Q4.csv  
+
+Cyclistic Trips data is collected from 4 files for a 12 month trend  
+* Divvy_Trips_2014_Q1Q2.csv  
+* Divvy_Trips_2014-Q3-07.csv  
+* Divvy_Trips_2014-Q3-0809.csv  
+* Divvy_Trips_2014-Q4.csv  
+
+All File Location references assume a working directory with **Start_Data** as an available sub folder with csv files
+
+### Data Preparation: Station Data
+This step is completed in excel due to small size of data set and easy of cleaning via xlookup before creating a combined csv file  
+New file name is: *Divvy_Stations_Combined_Q1Q4.csv*
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Let's install the required packages first
+
+```{r installing packages}
+#install.packages("tidyverse")
+library(tidyverse)
+#install.packages("shiny")
+library(shiny)
+library(lubridate)
+```
+
+### Now let's load the csv files to dataframes  
+
+```{r import stations and trips DFs}
+stations <- read.csv('Start_Data/Divvy_Stations_Combined_Q1Q4.csv')
+Trips_Q1Q2 <- read.csv('Start_Data/Divvy_Trips_2014_Q1Q2.csv') #Jan through Jun data set
+Trips_Q3_7 <- read.csv('Start_Data/Divvy_Trips_2014-Q3-07.csv') #Jul data set
+Trips_Q3_89 <- read.csv('Start_Data/Divvy_Trips_2014-Q3-0809.csv') #Aug through Sep data set
+Trips_Q4 <- read.csv('Start_Data/Divvy_Trips_2014-Q4.csv') #Oct through Dec data set
+```
+### Cleaning of each table before combining  
+This step was not actually necessary, but some issues during the csv import caused some concern that was mitigated by double checking each of the data files before rbind was completed  
+
+
+```{r Data cleaning for individual trips files}
+Trips_Q1Q2$starttime <- mdy_hm(Trips_Q1Q2$starttime,tz="UTC")
+Trips_Q1Q2$stoptime <- mdy_hm(Trips_Q1Q2$stoptime,tz="UTC")
+
+Trips_Q3_7$starttime <- mdy_hm(Trips_Q3_7$starttime,tz="UTC")
+Trips_Q3_7$stoptime <- mdy_hm(Trips_Q3_7$stoptime,tz="UTC")
+
+Trips_Q3_89$starttime <- mdy_hm(Trips_Q3_89$starttime,tz="UTC")
+Trips_Q3_89$stoptime <- mdy_hm(Trips_Q3_89$stoptime,tz="UTC")
+
+Trips_Q4$starttime <- mdy_hm(Trips_Q4$starttime,tz="UTC")
+Trips_Q4$stoptime <- mdy_hm(Trips_Q4$stoptime,tz="UTC")
+```
+
+### Using rbind to combine the first all trip tables into 'trips_complete' for cleaning and analysis  
+
+
+```{r binding the trips tables into 1 df}
+trips_complete <- rbind(Trips_Q1Q2,Trips_Q3_7)
+trips_complete <- rbind(trips_complete, Trips_Q3_89)
+trips_complete <- rbind(trips_complete, Trips_Q4) #final fie is 270.1 MB with full year data
+#str(trips_complete)
+```
+
+### Data validity checks  
+
+Before any serious exploration, we run a quick summary of the complete table to see if any data may be missing in a substantial way  
+Missing fields in data set account for ~32% of data set, therefore should not use these fields for conclusions:  
+* birthyear field has 791,216 NA values
+* gender field has 791,280 NA values   
+
+Further check using filter with is.na() confirms that 791,358 records in total have a missing gender or birthdate record  
+This is a very significant overlap, indicating users typically do not share both records in majority of cases  
+Recommendation: do not use gender or birthyear as part of analysis, as the gaps in these records total to 32.2% of the dataset for 2024
+```{r Data validity checks}
+#summary(trips_complete)
+#ggplot(trips_complete,aes(x=from_station_name, fill=from_station_name)) + geom_bar() + geom_text(aes(label = after_stat(count)), stat = "count", vjust = 1.5, color = "white")
+
+#dplyr::count(trips_complete, gender)
+#dplyr::count(trips_complete, from_station_name)
+#dplyr::count(trips_complete, to_station_name)
+#dplyr::count(trips_complete, usertype)
+#dplyr::count(trips_complete, bikeid)
+#dplyr::count(trips_complete, birthyear)
+#trips_complete %>% filter(is.na(birthyear) | is.na(gender))
+```
+
+
+### Additional fields construction  
+Now we will add 2 additional fields for the assessment: day_of_week and ride_length  
+
+```{r Additional fields construction}
+trips_complete$ride_length <- trips_complete$stoptime - trips_complete$starttime
+trips_complete$day_of_week <- weekdays(trips_complete$starttime)
+#head(trips_complete)
+```
+
+### Metrics of ride length field to expolore best path for further investigation  
+
+```{r data summary for ride_length}
+#dplyr::count(trips_complete,ride_length, sort=TRUE) # Top 10: 6,7,5,8,9,10,4,11,12,13
+#dplyr::count(trips_complete,ride_length > 300, sort=FALSE) # Finding the Outlier Range
+#mean(trips_complete$ride_length) # 17.08 min
+#min(trips_complete$ride_length) # 1 min
+#max(trips_complete$ride_length) # 1,440 min
+```
+```{r data summary for day of week}
+#dplyr::count(trips_complete,day_of_week, sort=TRUE) # Daily averages fairly flat, Fri & Sat: ~15% / Mon & Thu & Sun ~14%, Tue & Wed ~13.5%
+#mean(trips_complete$ride_length) # 17.08 min
+#min(trips_complete$ride_length) # 1 min
+#max(trips_complete$ride_length) # 1,440 min
+```
+
+### GGPlot for comparisons of ride volumes vs. days of week - using count data  
+Conclusion 1: Subscribers are significantly less active on the weekends  
+Issue Found: Box Plotting is affected by outliers at extreme scale, will make modified trips_complete variable to combat the outlier issue  
+
+
+```{r Charts for comparison, fig.width=12, fig.height=4 }
+#ggplot(trips_complete, aes(x=day_of_week)) + geom_bar() #Flat by day of week
+ggplot(trips_complete, aes(x=day_of_week)) + geom_bar(aes(fill=trips_complete$usertype)) #Subscribers are significantly less active on the weekends
+#ggplot(trips_complete, aes(x=usertype, y=ride_length)) + geom_boxplot()
+```
+
+### GGPlot comparing ride volumes vs. days of week - using summary data  
+We will make a quick summary table to redraw the bar chart with clear metrics  
+
+```{r}
+bar_dow <- trips_complete %>% 
+  group_by(usertype, day_of_week) %>% 
+  count(usertype)
+view(bar_dow)
+bar_dow <- bar_dow %>% rename("user_counts" = 3)
+
+```
+
+### Some quick grouping in a separate DF to confirm the ratios of ride lengths  
+Using a mutate function with case_when to give some quick grouping justifying the charts below  
+
+```{r}
+trips_comp_mod <- trips_complete |> mutate(Range = case_when(
+  ride_length <= 60 ~ "A: 1-60 Minutes",
+  ride_length > 60 & ride_length <= 300 ~ "B: 60-300 Minutes",
+  ride_length > 60 ~ "C: 300-1500 Minutes",
+  TRUE ~ "undetermined"
+))
+
+range_summary <- trips_comp_mod %>% group_by(Range) %>% count(usertype)
+view(range_summary)
+```
+
+```{r fig.width=9, fig.height=4}
+#ggplot(trips_comp_mod,aes(x=Range)) + geom_bar()+
+#  labs(x="Time Range in Minutes", y="Count of Rides", title="Rides Grouped by Time Ranges")
+```
+
+
+```{r fig.width=12, fig.height=4}
+trips_complete %>% 
+  filter(ride_length <= 60) %>% 
+  ggplot(aes(x=ride_length, y=usertype, color=usertype)) + geom_boxplot(outlier.size=.5) +
+  labs(x="Length of Ride", y="User Type", title="Ride Length vs. User Type", subtitle="For rides up to 60 minutes")
+```
+
+```{r fig.width=12, fig.height=4}
+trips_complete %>% 
+  filter(ride_length > 60) %>% 
+  ggplot(aes(x=ride_length,fill=usertype)) + geom_bar() +
+  labs(x="Length of Ride", y="User Type", title="Ride Length vs. User Type", subtitle="For rides over 60 minutes")
+```
+### Now we will use the data to attempt to confirm active users per day based on rides
+Data is interesting, but not completely conclusive without making more assumptions about how to divide daily ride counts in a reasonable way
+
+```{r fig.width=12, fig.height=4}
+trips_comp_mod2 <- trips_complete %>% 
+  mutate(start_date = as.Date(starttime))
+
+trips_by_date <- trips_comp_mod2 %>% 
+  group_by(start_date) %>% 
+  count(usertype)
+
+trips_by_date <- trips_by_date %>% rename("daily_trips" = 3)
+
+ggplot(data = trips_by_date) + geom_point(mapping = aes(x=start_date, y=daily_trips, color=usertype)) +
+  labs(x="Date of Ride", y="Count of Rides", title="Daily Rides by User Type") + guides(color = guide_legend(title = "User Type"))
+```
+
+
