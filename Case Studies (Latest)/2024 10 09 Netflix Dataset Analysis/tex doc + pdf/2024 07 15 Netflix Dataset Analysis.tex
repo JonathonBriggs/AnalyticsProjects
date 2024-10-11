@@ -1,0 +1,1733 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{soul}      % strikethrough (\st) support for pandoc >= 3.0.0
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{2024 07 15 Netflix Dataset Analysis}
+    
+    
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \hypertarget{netflix-dataset-analysis}{%
+\section{Netflix Dataset Analysis}\label{netflix-dataset-analysis}}
+
+\begin{itemize}
+\tightlist
+\item
+  Data will be analyzed using pandas, seaborn and matplotlib.pyplot
+\item
+  Dataset is available as csv file
+\item
+  Dataset consists of movies and TV shows from the year 2021 on the
+  Netflix platform, and is originally from the Flixable third party
+  Netflix search engine (available on Kaggle)
+\end{itemize}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}Import statements + preparation of datafram set + first look}
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+\PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sns}
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+sa}{r}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{file.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{data}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+  Show\_Id Category  Title           Director  \textbackslash{}
+0      s1  TV Show     3\%                NaN
+1      s2    Movie  07:19  Jorge Michel Grau
+2      s3    Movie  23:59       Gilbert Chan
+3      s4    Movie      9        Shane Acker
+4      s5    Movie     21     Robert Luketic
+
+                                                Cast        Country  \textbackslash{}
+0  João Miguel, Bianca Comparato, Michel Gomes, R{\ldots}         Brazil
+1  Demián Bichir, Héctor Bonilla, Oscar Serrano, {\ldots}         Mexico
+2  Tedd Chan, Stella Chung, Henley Hii, Lawrence {\ldots}      Singapore
+3  Elijah Wood, John C. Reilly, Jennifer Connelly{\ldots}  United States
+4  Jim Sturgess, Kevin Spacey, Kate Bosworth, Aar{\ldots}  United States
+
+        Release\_Date Rating   Duration  \textbackslash{}
+0    August 14, 2020  TV-MA  4 Seasons
+1  December 23, 2016  TV-MA     93 min
+2  December 20, 2018      R     78 min
+3  November 16, 2017  PG-13     80 min
+4    January 1, 2020  PG-13    123 min
+
+                                                Type  \textbackslash{}
+0  International TV Shows, TV Dramas, TV Sci-Fi \&{\ldots}
+1                       Dramas, International Movies
+2                Horror Movies, International Movies
+3  Action \& Adventure, Independent Movies, Sci-Fi{\ldots}
+4                                             Dramas
+
+                                         Description
+0  In a future where the elite inhabit an island {\ldots}
+1  After a devastating earthquake hits Mexico Cit{\ldots}
+2  When an army recruit is found dead, his fellow{\ldots}
+3  In a postapocalyptic world, rag-doll robots hi{\ldots}
+4  A brilliant group of students become card-coun{\ldots}
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{o}{.}\PY{n}{dtypes}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Show\_Id         object
+Category        object
+Title           object
+Director        object
+Cast            object
+Country         object
+Release\_Date    object
+Rating          object
+Duration        object
+Type            object
+Description     object
+dtype: object
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{o}{.}\PY{n}{tail}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+     Show\_Id Category                                    Title     Director  \textbackslash{}
+7784   s7783    Movie                                     Zozo  Josef Fares
+7785   s7784    Movie                                   Zubaan  Mozez Singh
+7786   s7785    Movie                        Zulu Man in Japan          NaN
+7787   s7786  TV Show                    Zumbo's Just Desserts          NaN
+7788   s7787    Movie  ZZ TOP: THAT LITTLE OL' BAND FROM TEXAS     Sam Dunn
+
+                                                   Cast  \textbackslash{}
+7784  Imad Creidi, Antoinette Turk, Elias Gergi, Car{\ldots}
+7785  Vicky Kaushal, Sarah-Jane Dias, Raaghav Chanan{\ldots}
+7786                                            Nasty C
+7787                         Adriano Zumbo, Rachel Khoo
+7788                                                NaN
+
+                                                Country        Release\_Date  \textbackslash{}
+7784  Sweden, Czech Republic, United Kingdom, Denmar{\ldots}    October 19, 2020
+7785                                              India       March 2, 2019
+7786                                                NaN  September 25, 2020
+7787                                          Australia    October 31, 2020
+7788              United Kingdom, Canada, United States       March 1, 2020
+
+     Rating  Duration                                               Type  \textbackslash{}
+7784  TV-MA    99 min                       Dramas, International Movies
+7785  TV-14   111 min     Dramas, International Movies, Music \& Musicals
+7786  TV-MA    44 min  Documentaries, International Movies, Music \& M{\ldots}
+7787  TV-PG  1 Season                 International TV Shows, Reality TV
+7788  TV-MA    90 min                    Documentaries, Music \& Musicals
+
+                                            Description
+7784  When Lebanon's Civil War deprives Zozo of his {\ldots}
+7785  A scrappy but poor boy worms his way into a ty{\ldots}
+7786  In this documentary, South African rapper Nast{\ldots}
+7787  Dessert wizard Adriano Zumbo looks for the nex{\ldots}
+7788  This documentary delves into the mystique behi{\ldots}
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}data.shape \PYZhy{}\PYZhy{}\PYZgt{} (7789, 11)}
+\PY{c+c1}{\PYZsh{}data.size \PYZhy{}\PYZhy{}\PYZgt{} 85679\PYZsh{}}
+\PY{c+c1}{\PYZsh{}data.columns Index([\PYZsq{}Show\PYZus{}Id\PYZsq{}, \PYZsq{}Category\PYZsq{}, \PYZsq{}Title\PYZsq{}, \PYZsq{}Director\PYZsq{}, \PYZsq{}Cast\PYZsq{}, \PYZsq{}Country\PYZsq{},}
+\PY{c+c1}{\PYZsh{}       \PYZsq{}Release\PYZus{}Date\PYZsq{}, \PYZsq{}Rating\PYZsq{}, \PYZsq{}Duration\PYZsq{}, \PYZsq{}Type\PYZsq{}, \PYZsq{}Description\PYZsq{}],}
+\PY{c+c1}{\PYZsh{}      dtype=\PYZsq{}object\PYZsq{})}
+\PY{n}{data}\PY{o}{.}\PY{n}{info}\PY{p}{(}\PY{p}{)} 
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 7789 entries, 0 to 7788
+Data columns (total 11 columns):
+ \#   Column        Non-Null Count  Dtype
+---  ------        --------------  -----
+ 0   Show\_Id       7789 non-null   object
+ 1   Category      7789 non-null   object
+ 2   Title         7789 non-null   object
+ 3   Director      5401 non-null   object
+ 4   Cast          7071 non-null   object
+ 5   Country       7282 non-null   object
+ 6   Release\_Date  7779 non-null   object
+ 7   Rating        7782 non-null   object
+ 8   Duration      7789 non-null   object
+ 9   Type          7789 non-null   object
+ 10  Description   7789 non-null   object
+dtypes: object(11)
+memory usage: 669.5+ KB
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{o}{.}\PY{n}{isnull}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)} \PY{c+c1}{\PYZsh{}good number of null values to keep an eye out for}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Show\_Id            0
+Category           0
+Title              0
+Director        2388
+Cast             718
+Country          507
+Release\_Date      10
+Rating             7
+Duration           0
+Type               0
+Description        0
+dtype: int64
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{check-for-duplicate-records-in-the-dataset}{%
+\subsubsection{1. Check for duplicate records in the
+dataset}\label{check-for-duplicate-records-in-the-dataset}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+  Show\_Id Category Title Director  \textbackslash{}
+0      s1  TV Show    3\%      NaN
+
+                                                Cast Country     Release\_Date  \textbackslash{}
+0  João Miguel, Bianca Comparato, Michel Gomes, R{\ldots}  Brazil  August 14, 2020
+
+  Rating   Duration                                               Type  \textbackslash{}
+0  TV-MA  4 Seasons  International TV Shows, TV Dramas, TV Sci-Fi \&{\ldots}
+
+                                         Description
+0  In a future where the elite inhabit an island {\ldots}
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{p}{[}\PY{n}{data}\PY{o}{.}\PY{n}{duplicated}\PY{p}{(}\PY{p}{)}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+     Show\_Id Category              Title        Director  \textbackslash{}
+6300    s684    Movie           Backfire     Dave Patten
+6622   s6621    Movie  The Lost Okoroshi  Abba T. Makama
+
+                                                   Cast        Country  \textbackslash{}
+6300  Black Deniro, Byron "Squally" Vinson, Dominic {\ldots}  United States
+6622  Seun Ajayi, Judith Audu, Tope Tedela, Ifu Enna{\ldots}        Nigeria
+
+           Release\_Date Rating Duration  \textbackslash{}
+6300      April 5, 2019  TV-MA   97 min
+6622  September 4, 2020  TV-MA   94 min
+
+                                       Type  \textbackslash{}
+6300  Dramas, Independent Movies, Thrillers
+6622   Comedies, Dramas, Independent Movies
+
+                                            Description
+6300  When two would-be robbers accidentally kill a {\ldots}
+6622  A disillusioned security guard transforms into{\ldots}
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{12}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{o}{.}\PY{n}{drop\PYZus{}duplicates}\PY{p}{(}\PY{n}{inplace} \PY{o}{=} \PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{are-there-any-null-values-present-in-any-column-that-need-to-be-handled-show-with-heat-map-as-well.}{%
+\subsubsection{2. Are there any Null Values present in any column that
+need to be handled? Show with Heat Map as
+well.}\label{are-there-any-null-values-present-in-any-column-that-need-to-be-handled-show-with-heat-map-as-well.}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{14}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{o}{.}\PY{n}{isnull}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{14}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Show\_Id            0
+Category           0
+Title              0
+Director        2388
+Cast             718
+Country          507
+Release\_Date      10
+Rating             7
+Duration           0
+Type               0
+Description        0
+dtype: int64
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{15}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{sns}\PY{o}{.}\PY{n}{heatmap}\PY{p}{(}\PY{n}{data}\PY{o}{.}\PY{n}{isnull}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_13_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{for-house-of-cards-what-is-the-show-id-and-who-is-the-director-of-the-show}{%
+\subsubsection{3. For `House of Cards', what is the Show ID and Who is
+the director of the
+show?}\label{for-house-of-cards-what-is-the-show-id-and-who-is-the-director-of-the-show}}
+
+    Showing 3 methods to find this results
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{18}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}Precision, assuming exact title}
+\PY{n}{data}\PY{p}{[}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Title}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{House of Cards}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{18}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+     Show\_Id Category           Title  \textbackslash{}
+2832   s2833  TV Show  House of Cards
+
+                                               Director  \textbackslash{}
+2832  Robin Wright, David Fincher, Gerald McRaney, J{\ldots}
+
+                                                   Cast        Country  \textbackslash{}
+2832  Kevin Spacey, Robin Wright, Kate Mara, Corey S{\ldots}  United States
+
+          Release\_Date Rating   Duration                     Type  \textbackslash{}
+2832  November 2, 2018  TV-MA  6 Seasons  TV Dramas, TV Thrillers
+
+                                            Description
+2832  A ruthless politician will stop at nothing to {\ldots}
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{19}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}Method 1 looking for string within title values}
+\PY{n}{data}\PY{p}{[}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Title}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{isin}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{House of Cards}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{19}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+     Show\_Id Category           Title  \textbackslash{}
+2832   s2833  TV Show  House of Cards
+
+                                               Director  \textbackslash{}
+2832  Robin Wright, David Fincher, Gerald McRaney, J{\ldots}
+
+                                                   Cast        Country  \textbackslash{}
+2832  Kevin Spacey, Robin Wright, Kate Mara, Corey S{\ldots}  United States
+
+          Release\_Date Rating   Duration                     Type  \textbackslash{}
+2832  November 2, 2018  TV-MA  6 Seasons  TV Dramas, TV Thrillers
+
+                                            Description
+2832  A ruthless politician will stop at nothing to {\ldots}
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{20}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}Method 2 looking for string within title values}
+\PY{n}{data}\PY{p}{[}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Title}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{str}\PY{o}{.}\PY{n}{contains}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{House of Cards}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{20}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+     Show\_Id Category           Title  \textbackslash{}
+2832   s2833  TV Show  House of Cards
+
+                                               Director  \textbackslash{}
+2832  Robin Wright, David Fincher, Gerald McRaney, J{\ldots}
+
+                                                   Cast        Country  \textbackslash{}
+2832  Kevin Spacey, Robin Wright, Kate Mara, Corey S{\ldots}  United States
+
+          Release\_Date Rating   Duration                     Type  \textbackslash{}
+2832  November 2, 2018  TV-MA  6 Seasons  TV Dramas, TV Thrillers
+
+                                            Description
+2832  A ruthless politician will stop at nothing to {\ldots}
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{in-which-year-were-the-highest-number-of-tv-shows-and-movies-releases.-show-with-a-bar-graph}{%
+\subsubsection{4. In which year were the highest number of TV Shows and
+Movies releases. Show with a Bar
+Graph}\label{in-which-year-were-the-highest-number-of-tv-shows-and-movies-releases.-show-with-a-bar-graph}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{22}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}data.dtypes}
+\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{New\PYZus{}Date}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{to\PYZus{}datetime}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Release\PYZus{}Date}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n+nb}{format}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mixed}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{23}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{New\PYZus{}Date}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{dt}\PY{o}{.}\PY{n}{year}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{24}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}data[\PYZsq{}Year\PYZsq{}].value\PYZus{}counts()}
+\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{kind}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bar}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{how-many-movies-and-tv-shows-are-in-the-dataset-show-with-a-bar-graph.}{%
+\subsubsection{5. How many Movies and TV Shows are in the dataset? Show
+with a bar
+graph.}\label{how-many-movies-and-tv-shows-are-in-the-dataset-show-with-a-bar-graph.}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{26}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}
+\PY{n}{data}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{Category}\PY{o}{.}\PY{n}{count}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{26}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Category
+Movie      5377
+TV Show    2410
+Name: Category, dtype: int64
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{27}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}data[\PYZsq{}Category\PYZsq{}].value\PYZus{}counts().plot(kind=\PYZsq{}bar\PYZsq{})}
+\PY{n}{sns}\PY{o}{.}\PY{n}{countplot}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{27}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+<Axes: xlabel='count', ylabel='Category'>
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_25_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{show-all-the-movies-that-were-released-in-the-year-2020}{%
+\subsubsection{6. Show all the Movies that were released in the year
+2020}\label{show-all-the-movies-that-were-released-in-the-year-2020}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{29}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{p}{[}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+m+mi}{2020}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Movie}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]} \PY{c+c1}{\PYZsh{}1312 in total}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{29}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+     Show\_Id Category                                    Title  \textbackslash{}
+4         s5    Movie                                       21
+6         s7    Movie                                      122
+14       s15    Movie                                     3022
+27       s28    Movie                                   \#Alive
+28       s29    Movie            \#AnneFrank - Parallel Stories
+{\ldots}      {\ldots}      {\ldots}                                      {\ldots}
+7762   s7761    Movie                                Zaki Chan
+7783   s7782    Movie                                     Zoom
+7784   s7783    Movie                                     Zozo
+7786   s7785    Movie                        Zulu Man in Japan
+7788   s7787    Movie  ZZ TOP: THAT LITTLE OL' BAND FROM TEXAS
+
+                         Director  \textbackslash{}
+4                  Robert Luketic
+6                 Yasir Al Yasiri
+14                     John Suits
+27                         Cho Il
+28    Sabina Fedeli, Anna Migotto
+{\ldots}                           {\ldots}
+7762                   Wael Ihsan
+7783                 Peter Hewitt
+7784                  Josef Fares
+7786                          NaN
+7788                     Sam Dunn
+
+                                                   Cast  \textbackslash{}
+4     Jim Sturgess, Kevin Spacey, Kate Bosworth, Aar{\ldots}
+6     Amina Khalil, Ahmed Dawood, Tarek Lotfy, Ahmed{\ldots}
+14    Omar Epps, Kate Walsh, Miranda Cosgrove, Angus{\ldots}
+27                             Yoo Ah-in, Park Shin-hye
+28                          Helen Mirren, Gengher Gatti
+{\ldots}                                                 {\ldots}
+7762  Ahmed Helmy, Yasmin Abdulaziz, Hassan Hosny, H{\ldots}
+7783  Tim Allen, Courteney Cox, Chevy Chase, Kate Ma{\ldots}
+7784  Imad Creidi, Antoinette Turk, Elias Gergi, Car{\ldots}
+7786                                            Nasty C
+7788                                                NaN
+
+                                                Country        Release\_Date  \textbackslash{}
+4                                         United States     January 1, 2020
+6                                                 Egypt        June 1, 2020
+14                                        United States      March 19, 2020
+27                                          South Korea   September 8, 2020
+28                                                Italy        July 1, 2020
+{\ldots}                                                 {\ldots}                 {\ldots}
+7762                                              Egypt        May 19, 2020
+7783                                      United States    January 11, 2020
+7784  Sweden, Czech Republic, United Kingdom, Denmar{\ldots}    October 19, 2020
+7786                                                NaN  September 25, 2020
+7788              United Kingdom, Canada, United States       March 1, 2020
+
+     Rating Duration                                               Type  \textbackslash{}
+4     PG-13  123 min                                             Dramas
+6     TV-MA   95 min                Horror Movies, International Movies
+14        R   91 min    Independent Movies, Sci-Fi \& Fantasy, Thrillers
+27    TV-MA   99 min     Horror Movies, International Movies, Thrillers
+28    TV-14   95 min                Documentaries, International Movies
+{\ldots}     {\ldots}      {\ldots}                                                {\ldots}
+7762  TV-PG  109 min    Comedies, International Movies, Romantic Movies
+7783     PG   88 min                 Children \& Family Movies, Comedies
+7784  TV-MA   99 min                       Dramas, International Movies
+7786  TV-MA   44 min  Documentaries, International Movies, Music \& M{\ldots}
+7788  TV-MA   90 min                    Documentaries, Music \& Musicals
+
+                                            Description   New\_Date    Year
+4     A brilliant group of students become card-coun{\ldots} 2020-01-01  2020.0
+6     After an awful accident, a couple admitted to {\ldots} 2020-06-01  2020.0
+14    Stranded when the Earth is suddenly destroyed {\ldots} 2020-03-19  2020.0
+27    As a grisly virus rampages a city, a lone man {\ldots} 2020-09-08  2020.0
+28    Through her diary, Anne Frank's story is retol{\ldots} 2020-07-01  2020.0
+{\ldots}                                                 {\ldots}        {\ldots}     {\ldots}
+7762  An unqualified young man has his work cut out {\ldots} 2020-05-19  2020.0
+7783  Dragged from civilian life, a former superhero{\ldots} 2020-01-11  2020.0
+7784  When Lebanon's Civil War deprives Zozo of his {\ldots} 2020-10-19  2020.0
+7786  In this documentary, South African rapper Nast{\ldots} 2020-09-25  2020.0
+7788  This documentary delves into the mystique behi{\ldots} 2020-03-01  2020.0
+
+[1312 rows x 13 columns]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{show-the-titles-of-all-the-tv-shows-that-were-released-in-india-only}{%
+\subsubsection{7. Show the Titles of all the TV Shows that were released
+in India
+Only}\label{show-the-titles-of-all-the-tv-shows-that-were-released-in-india-only}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{31}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}data.head(1)}
+\PY{n}{data}\PY{p}{[}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{India}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{TV Show}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Title}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{c+c1}{\PYZsh{}71 entries in total}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{31}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+86            21 Sarfarosh: Saragarhi 1897
+132                              7 (Seven)
+340                           Agent Raghav
+364                           Akbar Birbal
+533                    Anjaan: Rural Myths
+                       {\ldots}
+6249                  The Creative Indians
+6400    The Golden Years with Javed Akhtar
+6469                The House That Made Me
+7294                            Typewriter
+7705                       Yeh Meri Family
+Name: Title, Length: 71, dtype: object
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{show-the-top-10-directors-for-both-tv-shows-or-movies}{%
+\subsubsection{8. Show the Top 10 Directors for both TV Shows or
+Movies}\label{show-the-top-10-directors-for-both-tv-shows-or-movies}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{33}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{data}\PY{p}{[}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{TV Show}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Director}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{33}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Director
+Alastair Fothergill           3
+Shin Won-ho                   2
+Iginio Straffi                2
+Rob Seidenglanz               2
+Stan Lathan                   2
+Ken Burns                     2
+Serdar Akar                   1
+Cosima Spender                1
+Jani Lachauer, Jakob Schuh    1
+Jalil Lespert                 1
+Name: count, dtype: int64
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{34}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{p}{[}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Movie}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Director}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{34}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Director
+Raúl Campos, Jan Suter    18
+Marcus Raboy              15
+Jay Karas                 14
+Cathy Garcia-Molina       13
+Youssef Chahine           12
+Jay Chapman               12
+Martin Scorsese           12
+Steven Spielberg          10
+David Dhawan               9
+Johnnie To                 8
+Name: count, dtype: int64
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{show-all-the-records-where-category-movie-type-comedies-or-country-united-kingdom}{%
+\subsubsection{9. Show all the records where Category = `Movie' \& Type
+= `Comedies' or Country = `United
+Kingdom'}\label{show-all-the-records-where-category-movie-type-comedies-or-country-united-kingdom}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{36}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{p}{[}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Movie}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Type}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Comedies}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{o}{|} \PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{United Kingdom}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]} \PY{c+c1}{\PYZsh{}485 entries found}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{36}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+     Show\_Id Category                   Title          Director  \textbackslash{}
+19       s20    Movie                     '89               NaN
+33       s34    Movie            \#realityhigh  Fernando Lebrija
+58       s59  TV Show             100\% Hotter               NaN
+72       s73    Movie                17 Again       Burr Steers
+82       s83    Movie     2036 Origin Unknown     Hasraf Dulull
+{\ldots}      {\ldots}      {\ldots}                     {\ldots}               {\ldots}
+7670   s7669  TV Show  World War II in Colour               NaN
+7671   s7670  TV Show  World's Busiest Cities               NaN
+7688   s7687    Movie  XV: Beyond the Tryline  Pierre Deschamps
+7725   s7724    Movie            You Can Tutu       James Brown
+7740   s7739  TV Show         Young Wallander               NaN
+
+                                                   Cast         Country  \textbackslash{}
+19                   Lee Dixon, Ian Wright, Paul Merson  United Kingdom
+33    Nesta Cooper, Kate Walsh, John Michael Higgins{\ldots}   United States
+58    Daniel Palmer, Melissa Sophia, Karen Williams,{\ldots}  United Kingdom
+72    Zac Efron, Leslie Mann, Matthew Perry, Thomas {\ldots}   United States
+82    Katee Sackhoff, Ray Fearon, Julie Cox, Steven {\ldots}  United Kingdom
+{\ldots}                                                 {\ldots}             {\ldots}
+7670                                      Robert Powell  United Kingdom
+7671                 Anita Rani, Ade Adepitan, Dan Snow  United Kingdom
+7688                                                NaN  United Kingdom
+7725  Lily O'Regan, Jeannettsy Enriquez Borges, Joel{\ldots}  United Kingdom
+7740  Adam Pålsson, Richard Dillane, Leanne Best, El{\ldots}  United Kingdom
+
+           Release\_Date Rating  Duration  \textbackslash{}
+19         May 16, 2018  TV-PG    87 min
+33    September 8, 2017  TV-14    99 min
+58     November 1, 2019  TV-14  1 Season
+72      January 1, 2021  PG-13   102 min
+82    December 20, 2018  TV-14    95 min
+{\ldots}                 {\ldots}    {\ldots}       {\ldots}
+7670     August 1, 2017  TV-MA  1 Season
+7671   February 1, 2019  TV-PG  1 Season
+7688     March 18, 2020  TV-14    91 min
+7725  December 31, 2017   TV-G    87 min
+7740  September 3, 2020  TV-MA  1 Season
+
+                                                   Type  \textbackslash{}
+19                                        Sports Movies
+33                                             Comedies
+58    British TV Shows, International TV Shows, Real{\ldots}
+72                                             Comedies
+82                                     Sci-Fi \& Fantasy
+{\ldots}                                                 {\ldots}
+7670  British TV Shows, Docuseries, International TV{\ldots}
+7671                       British TV Shows, Docuseries
+7688                       Documentaries, Sports Movies
+7725                           Children \& Family Movies
+7740  Crime TV Shows, International TV Shows, TV Dramas
+
+                                            Description   New\_Date    Year
+19    Mixing old footage with interviews, this is th{\ldots} 2018-05-16  2018.0
+33    When nerdy high schooler Dani finally attracts{\ldots} 2017-09-08  2017.0
+58    A stylist, a hair designer and a makeup artist{\ldots} 2019-11-01  2019.0
+72    Nearing a midlife crisis, thirty-something Mik{\ldots} 2021-01-01  2021.0
+82    Working with an artificial intelligence to inv{\ldots} 2018-12-20  2018.0
+{\ldots}                                                 {\ldots}        {\ldots}     {\ldots}
+7670  Footage of the most dramatic moments from Worl{\ldots} 2017-08-01  2017.0
+7671  From Moscow to Mexico City, three BBC journali{\ldots} 2019-02-01  2019.0
+7688  Set against the 2015 Rugby World Cup, this doc{\ldots} 2020-03-18  2020.0
+7725  A gifted young ballet dancer struggles to find{\ldots} 2017-12-31  2017.0
+7740  An incendiary hate crime stirs civil unrest, f{\ldots} 2020-09-03  2020.0
+
+[485 rows x 13 columns]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{in-how-many-movies-shows-has-tom-cruise-been-cast}{%
+\subsubsection{10. In how many movies / shows has Tom Cruise been
+cast?}\label{in-how-many-movies-shows-has-tom-cruise-been-cast}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{38}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}data.head(1)}
+\PY{n}{data}\PY{p}{[}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Cast}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Tom Cruise}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{c+c1}{\PYZsh{}Nothing in the df for only Tom Cruise}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{38}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Empty DataFrame
+Columns: [Show\_Id, Category, Title, Director, Cast, Country, Release\_Date,
+Rating, Duration, Type, Description, New\_Date, Year]
+Index: []
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{39}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}Have to remove the NULL values first to be able to use the next bit of code}
+\PY{n}{data\PYZus{}new} \PY{o}{=} \PY{n}{data}\PY{o}{.}\PY{n}{dropna}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{40}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data\PYZus{}new}\PY{p}{[}\PY{n}{data\PYZus{}new}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Cast}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{str}\PY{o}{.}\PY{n}{contains}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Tom Cruise}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]} \PY{c+c1}{\PYZsh{}found 2 movies}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{40}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+     Show\_Id Category     Title              Director  \textbackslash{}
+3860   s3861    Movie  Magnolia  Paul Thomas Anderson
+5071   s5071    Movie  Rain Man        Barry Levinson
+
+                                                   Cast        Country  \textbackslash{}
+3860  Jeremy Blackman, Tom Cruise, Melinda Dillon, A{\ldots}  United States
+5071  Dustin Hoffman, Tom Cruise, Valeria Golino, Ge{\ldots}  United States
+
+         Release\_Date Rating Duration                        Type  \textbackslash{}
+3860  January 1, 2020      R  189 min  Dramas, Independent Movies
+5071     July 1, 2019      R  134 min      Classic Movies, Dramas
+
+                                            Description   New\_Date    Year
+3860  Through chance, human action, past history and{\ldots} 2020-01-01  2020.0
+5071  A fast-talking yuppie is forced to slow down w{\ldots} 2019-07-01  2019.0
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{what-are-the-different-ratings-defined-by-netflix}{%
+\subsubsection{11. What are the different Ratings defined by
+Netflix}\label{what-are-the-different-ratings-defined-by-netflix}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{42}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{42}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Rating
+TV-MA       2863
+TV-14       1931
+TV-PG        806
+R            665
+PG-13        386
+TV-Y         280
+TV-Y7        271
+PG           247
+TV-G         194
+NR            84
+G             39
+TV-Y7-FV       6
+UR             5
+NC-17          3
+Name: count, dtype: int64
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{43}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{unique}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{43}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+array(['TV-MA', 'R', 'PG-13', 'TV-14', 'TV-PG', 'NR', 'TV-G', 'TV-Y', nan,
+       'TV-Y7', 'PG', 'G', 'NC-17', 'TV-Y7-FV', 'UR'], dtype=object)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{44}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{nunique}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{44}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+14
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{how-many-movies-received-a-tv-14-rating-in-canada}{%
+\subsubsection{11.1 How many Movies received a TV-14 rating in
+Canada}\label{how-many-movies-received-a-tv-14-rating-in-canada}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{46}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{p}{[}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{TV\PYZhy{}14}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Canada}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Movie}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]} \PY{c+c1}{\PYZsh{}11 Movies if you use the len function}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{46}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+     Show\_Id Category                                        Title  \textbackslash{}
+30       s31    Movie                             \#cats\_the\_mewvie
+34       s35    Movie                                        \#Roxy
+608     s609    Movie                               At First Light
+1506   s1507    Movie                   Counterfeiting in Suburbia
+3713   s3714    Movie                            Long Time Running
+3956   s3957    Movie  Martin Matte: La vie, la mort{\ldots}eh la la..!
+5336   s5336    Movie                   Sadie's Last Days on Earth
+5393   s5393    Movie                                   Sardaar ji
+6062   s6062    Movie                  The Accountant of Auschwitz
+7025   s7024    Movie                         The Wrong Babysitter
+7041   s7040    Movie               There's Something in the Water
+
+                                    Director  \textbackslash{}
+30                          Michael Margolis
+34                           Michael Kennedy
+608                              Jason Stone
+1506                           Jason Bourque
+3713  Jennifer Baichwal, Nicholas de Pencier
+3956                     Jean-François Blais
+5336                          Michael Seater
+5393                            Rohit Jugraj
+6062                        Matthew Shoychet
+7025                         George Mendeluk
+7041                  Ellen Page, Ian Daniel
+
+                                                   Cast Country  \textbackslash{}
+30                                                  NaN  Canada
+34    Jake Short, Sarah Fisher, Booboo Stewart, Dann{\ldots}  Canada
+608   Stefanie Scott, Theodore Pellerin, Percy Hynes{\ldots}  Canada
+1506  Sarah Butler, Larissa Albuquerque, Kayla Walla{\ldots}  Canada
+3713  Gord Downie, Paul Langlois, Gord Sinclair, Rob{\ldots}  Canada
+3956                                       Martin Matte  Canada
+5336  Morgan Taylor Campbell, Clark Backo, Ricardo H{\ldots}  Canada
+5393  Diljit Dosanjh, Neeru Bajwa, Mandy Takhar, Jas{\ldots}  Canada
+6062                                                NaN  Canada
+7025  Daphne Zuniga, Seann Gallagher, Lisa Marie Car{\ldots}  Canada
+7041                                         Ellen Page  Canada
+
+           Release\_Date Rating Duration  \textbackslash{}
+30     February 5, 2020  TV-14   90 min
+34       April 10, 2019  TV-14  105 min
+608   December 27, 2018  TV-14   91 min
+1506       July 1, 2018  TV-14   88 min
+3713  November 12, 2017  TV-14   96 min
+3956   October 14, 2019  TV-14   62 min
+5336    August 22, 2017  TV-14   94 min
+5393   December 1, 2017  TV-14  140 min
+6062       July 1, 2019  TV-14   78 min
+7025      June 18, 2019  TV-14   89 min
+7041     March 27, 2020  TV-14   72 min
+
+                                                   Type  \textbackslash{}
+30                  Documentaries, International Movies
+34                            Comedies, Romantic Movies
+608                            Dramas, Sci-Fi \& Fantasy
+1506                                  Dramas, Thrillers
+3713  Documentaries, International Movies, Music \& M{\ldots}
+3956                                    Stand-Up Comedy
+5336                         Comedies, Sci-Fi \& Fantasy
+5393   Comedies, International Movies, Music \& Musicals
+6062                Documentaries, International Movies
+7025                                          Thrillers
+7041                Documentaries, International Movies
+
+                                            Description   New\_Date    Year
+30    This pawesome documentary explores how our fel{\ldots} 2020-02-05  2020.0
+34    A teenage hacker with a huge nose helps a cool{\ldots} 2019-04-10  2019.0
+608   After mysterious lights imbue her with extraor{\ldots} 2018-12-27  2018.0
+1506  Two teenagers print counterfeit money in their{\ldots} 2018-07-01  2018.0
+3713  This documentary follows the 2016 tour of belo{\ldots} 2017-11-12  2017.0
+3956  Quebecois comedy star Martin Matte serves up e{\ldots} 2019-10-14  2019.0
+5336  High schooler Sadie Mitchell believes the worl{\ldots} 2017-08-22  2017.0
+5393  When a palatial wedding venue turns out to be {\ldots} 2017-12-01  2017.0
+6062  Decades after WWII, a former SS officer stands{\ldots} 2019-07-01  2019.0
+7025  A widow searches for her missing teenage daugh{\ldots} 2019-06-18  2019.0
+7041  This documentary spotlights the struggle of mi{\ldots} 2020-03-27  2020.0
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{how-many-tv-shows-received-an-r-rating-after-the-year-2018}{%
+\subsubsection{11.2 How many TV Shows received an R rating after the
+year
+2018}\label{how-many-tv-shows-received-an-r-rating-after-the-year-2018}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{48}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{p}{[}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Rating}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{R}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZgt{}} \PY{l+m+mi}{2018}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{TV Show}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]} \PY{c+c1}{\PYZsh{}1 result}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{48}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+     Show\_Id Category                                Title           Director  \textbackslash{}
+6437   s6436  TV Show  The Hateful Eight: Extended Version  Quentin Tarantino
+
+                                                   Cast Country  \textbackslash{}
+6437  Samuel L. Jackson, Kurt Russell, Jennifer Jaso{\ldots}     NaN
+
+        Release\_Date Rating  Duration      Type  \textbackslash{}
+6437  April 25, 2019      R  1 Season  TV Shows
+
+                                            Description   New\_Date    Year
+6437  Trapped at a stagecoach stop as a storm rages {\ldots} 2019-04-25  2019.0
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{what-is-the-maximum-duration-of-a-movie-show-on-netflix}{%
+\subsubsection{12. What is the maximum duration of a Movie / Show on
+Netflix}\label{what-is-the-maximum-duration-of-a-movie-show-on-netflix}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{50}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}data.groupby(\PYZsq{}Category\PYZsq{}).Duration}
+\PY{c+c1}{\PYZsh{}data.Duration.unique()}
+\PY{c+c1}{\PYZsh{}data.Duration.dtypes}
+\PY{n}{data}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Minutes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Unit}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Duration}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{str}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ }\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{expand}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{51}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{51}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+  Show\_Id Category  Title           Director  \textbackslash{}
+0      s1  TV Show     3\%                NaN
+1      s2    Movie  07:19  Jorge Michel Grau
+
+                                                Cast Country  \textbackslash{}
+0  João Miguel, Bianca Comparato, Michel Gomes, R{\ldots}  Brazil
+1  Demián Bichir, Héctor Bonilla, Oscar Serrano, {\ldots}  Mexico
+
+        Release\_Date Rating   Duration  \textbackslash{}
+0    August 14, 2020  TV-MA  4 Seasons
+1  December 23, 2016  TV-MA     93 min
+
+                                                Type  \textbackslash{}
+0  International TV Shows, TV Dramas, TV Sci-Fi \&{\ldots}
+1                       Dramas, International Movies
+
+                                         Description   New\_Date    Year  \textbackslash{}
+0  In a future where the elite inhabit an island {\ldots} 2020-08-14  2020.0
+1  After a devastating earthquake hits Mexico Cit{\ldots} 2016-12-23  2016.0
+
+  Minutes     Unit
+0       4  Seasons
+1      93      min
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{52}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}data.Minutes.max() \PYZhy{}\PYZhy{}\PYZgt{} 99 minutes}
+\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Minutes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Minutes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{str}\PY{p}{)}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{int}\PY{p}{)} \PY{c+c1}{\PYZsh{}\PYZhy{}\PYZhy{}\PYZgt{} had to confirm since max was not working correctly due to object datatype}
+\PY{n}{data}\PY{p}{[}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Minutes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZgt{}}\PY{o}{=} \PY{l+m+mi}{300}\PY{p}{]} \PY{c+c1}{\PYZsh{}Black Mirror: Bandersnatch at 312 minutes}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{52}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+    Show\_Id Category                       Title Director  \textbackslash{}
+957    s958    Movie  Black Mirror: Bandersnatch      NaN
+
+                                                  Cast        Country  \textbackslash{}
+957  Fionn Whitehead, Will Poulter, Craig Parkinson{\ldots}  United States
+
+          Release\_Date Rating Duration  \textbackslash{}
+957  December 28, 2018  TV-MA  312 min
+
+                                               Type  \textbackslash{}
+957  Dramas, International Movies, Sci-Fi \& Fantasy
+
+                                           Description   New\_Date    Year  \textbackslash{}
+957  In 1984, a young programmer begins to question{\ldots} 2018-12-28  2018.0
+
+     Minutes Unit
+957      312  min
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{which-country-has-the-highest-no-of-tv-shows}{%
+\subsubsection{13. Which country has the Highest No of TV
+Shows}\label{which-country-has-the-highest-no-of-tv-shows}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{54}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}data[data[\PYZsq{}Category\PYZsq{}] == \PYZsq{}TV Show\PYZsq{}].groupby(\PYZsq{}Country\PYZsq{})[\PYZsq{}Country\PYZsq{}].count().sort\PYZus{}values(ascending = False) \PYZsh{}Shows US with 705}
+\PY{n}{data}\PY{p}{[}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{TV Show}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{Country}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{n}{ascending} \PY{o}{=} \PY{k+kc}{False}\PY{p}{)} \PY{c+c1}{\PYZsh{}Different method, also 705}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{54}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Country
+United States                                    705
+United Kingdom                                   204
+Japan                                            157
+South Korea                                      147
+India                                             71
+                                                {\ldots}
+India, Germany, France                             1
+United Kingdom, Singapore                          1
+Australia, New Zealand                             1
+Croatia                                            1
+United States, France, South Korea, Indonesia      1
+Name: count, Length: 183, dtype: int64
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{how-can-we-sort-the-dataset-by-year}{%
+\subsubsection{14. How can we sort the dataset by
+Year?}\label{how-can-we-sort-the-dataset-by-year}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{56}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}data.head(1)}
+\PY{n}{data}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{ascending}\PY{o}{=} \PY{k+kc}{False}\PY{p}{)}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{56}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+     Show\_Id Category             Title                 Director  \textbackslash{}
+5564   s5564    Movie   Sherlock Holmes              Guy Ritchie
+5919   s5919    Movie         Surf's Up  Ash Brannon, Chris Buck
+980     s981  TV Show      Bling Empire                      NaN
+5955   s5955    Movie  Taare Zameen Par               Aamir Khan
+366     s367    Movie         Al acecho      Francisco D'Eufemia
+
+                                                   Cast  \textbackslash{}
+5564  Robert Downey Jr., Jude Law, Rachel McAdams, M{\ldots}
+5919  Shia LaBeouf, Jeff Bridges, Zooey Deschanel, J{\ldots}
+980                                                 NaN
+5955  Aamir Khan, Darsheel Safary, Tanay Chheda, Tis{\ldots}
+366   Rodrigo de la Serna, Belen Blanco, Walter Jako{\ldots}
+
+                                                Country      Release\_Date  \textbackslash{}
+5564  United States, Germany, United Kingdom, Australia   January 1, 2021
+5919                                      United States   January 1, 2021
+980                                                 NaN  January 15, 2021
+5955                                              India  January 10, 2021
+366                                                 NaN  January 12, 2021
+
+     Rating  Duration                                               Type  \textbackslash{}
+5564  PG-13   128 min                       Action \& Adventure, Comedies
+5919     PG    86 min  Children \& Family Movies, Comedies, Sports Movies
+980   TV-MA  1 Season                                         Reality TV
+5955     PG   162 min                       Dramas, International Movies
+366   TV-MA    81 min                    International Movies, Thrillers
+
+                                            Description   New\_Date    Year  \textbackslash{}
+5564  The game is afoot for an eccentric detective w{\ldots} 2021-01-01  2021.0
+5919  This Oscar-nominated animated comedy goes behi{\ldots} 2021-01-01  2021.0
+980   Follow LA's wildly wealthy Asian and Asian Ame{\ldots} 2021-01-15  2021.0
+5955  When daydreamer Ishaan is sent to boarding sch{\ldots} 2021-01-10  2021.0
+366   Looking for a fresh start, a park ranger gets {\ldots} 2021-01-12  2021.0
+
+      Minutes    Unit
+5564      128     min
+5919       86     min
+980         1  Season
+5955      162     min
+366        81     min
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{find-all-the-instances-where}{%
+\subsubsection{15. Find all the instances
+where:}\label{find-all-the-instances-where}}
+
+\hypertarget{category-is-movie-and-type-is-dramas}{%
+\paragraph{Category is `Movie' and Type is
+`Dramas'}\label{category-is-movie-and-type-is-dramas}}
+
+\hypertarget{or}{%
+\paragraph{OR}\label{or}}
+
+\hypertarget{category-is-tv-show-and-type-is-kids-tv}{%
+\paragraph{Category is `TV Show' and Type is `Kids
+TV'}\label{category-is-tv-show-and-type-is-kids-tv}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{58}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}data.Type.value\PYZus{}counts}
+\PY{n}{data}\PY{p}{[}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Movie}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Type}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dramas}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{58}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+  Show\_Id Category Title        Director  \textbackslash{}
+4      s5    Movie    21  Robert Luketic
+7      s8    Movie   187  Kevin Reynolds
+
+                                                Cast        Country  \textbackslash{}
+4  Jim Sturgess, Kevin Spacey, Kate Bosworth, Aar{\ldots}  United States
+7  Samuel L. Jackson, John Heard, Kelly Rowan, Cl{\ldots}  United States
+
+       Release\_Date Rating Duration    Type  \textbackslash{}
+4   January 1, 2020  PG-13  123 min  Dramas
+7  November 1, 2019      R  119 min  Dramas
+
+                                         Description   New\_Date    Year  \textbackslash{}
+4  A brilliant group of students become card-coun{\ldots} 2020-01-01  2020.0
+7  After one of his high school students attacks {\ldots} 2019-11-01  2019.0
+
+   Minutes Unit
+4      123  min
+7      119  min
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{59}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{p}{[}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{TV Show}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Type}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Kids}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{ TV}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{]}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{59}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+    Show\_Id Category         Title     Director  \textbackslash{}
+111    s112  TV Show       44 Cats          NaN
+276    s277  TV Show  Abby Hatcher  Kyran Kelly
+
+                                                  Cast                Country  \textbackslash{}
+111  Sarah Natochenny, Suzy Myers, Simona Berman, E{\ldots}                  Italy
+276  Macy Drouin, Wyatt White, Paul Sun-Hyung Lee, {\ldots}  United States, Canada
+
+        Release\_Date Rating   Duration      Type  \textbackslash{}
+111  October 1, 2020  TV-Y7  2 Seasons  Kids' TV
+276     July 1, 2020   TV-Y   1 Season  Kids' TV
+
+                                           Description   New\_Date    Year  \textbackslash{}
+111  Paw-esome tales abound when singing furry frie{\ldots} 2020-10-01  2020.0
+276  A big-hearted girl helps her Fuzzly friends wh{\ldots} 2020-07-01  2020.0
+
+     Minutes     Unit
+111        2  Seasons
+276        1   Season
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{60}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{p}{[}\PY{p}{(}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Movie}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Type}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dramas}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}\PY{o}{|}\PY{p}{(}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Category}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{TV Show}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Type}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Kids}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{ TV}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{60}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+     Show\_Id Category                       Title        Director  \textbackslash{}
+4         s5    Movie                          21  Robert Luketic
+7         s8    Movie                         187  Kevin Reynolds
+111     s112  TV Show                     44 Cats             NaN
+170     s171    Movie                A Family Man   Mark Williams
+232     s233    Movie  A Stoning in Fulham County   Larry Elikann
+{\ldots}      {\ldots}      {\ldots}                         {\ldots}             {\ldots}
+7668   s7667  TV Show               World of Winx  Iginio Straffi
+7717   s7716  TV Show                        Yoko             NaN
+7719   s7718  TV Show                         YOM             NaN
+7758   s7757  TV Show                          Z4             NaN
+7761   s7760  TV Show                   Zak Storm             NaN
+
+                                                   Cast  \textbackslash{}
+4     Jim Sturgess, Kevin Spacey, Kate Bosworth, Aar{\ldots}
+7     Samuel L. Jackson, John Heard, Kelly Rowan, Cl{\ldots}
+111   Sarah Natochenny, Suzy Myers, Simona Berman, E{\ldots}
+170   Gerard Butler, Gretchen Mol, Alison Brie, Will{\ldots}
+232   Ken Olin, Jill Eikenberry, Maureen Mueller, Gr{\ldots}
+{\ldots}                                                 {\ldots}
+7668  Haven Paschall, Alysha Deslorieux, Jessica Paq{\ldots}
+7717  Eileen Stevens, Alyson Leigh Rosenfeld, Sarah {\ldots}
+7719  Sairaj, Devyani Dagaonkar, Ketan Singh, Mayur {\ldots}
+7758  Apollo Costa, Gabriel Santana, Matheus Lustosa{\ldots}
+7761  Michael Johnston, Jessica Gee-George, Christin{\ldots}
+
+                                            Country        Release\_Date  \textbackslash{}
+4                                     United States     January 1, 2020
+7                                     United States    November 1, 2019
+111                                           Italy     October 1, 2020
+170                           Canada, United States   December 15, 2019
+232                                   United States     October 1, 2011
+{\ldots}                                             {\ldots}                 {\ldots}
+7668                           Italy, United States       June 16, 2017
+7717                                            NaN       June 23, 2018
+7719                                            NaN        June 7, 2018
+7758                                         Brazil   February 22, 2019
+7761  United States, France, South Korea, Indonesia  September 13, 2018
+
+     Rating   Duration      Type  \textbackslash{}
+4     PG-13    123 min    Dramas
+7         R    119 min    Dramas
+111   TV-Y7  2 Seasons  Kids' TV
+170       R    110 min    Dramas
+232   TV-14     95 min    Dramas
+{\ldots}     {\ldots}        {\ldots}       {\ldots}
+7668  TV-Y7  2 Seasons  Kids' TV
+7717   TV-Y   1 Season  Kids' TV
+7719  TV-Y7   1 Season  Kids' TV
+7758  TV-PG  2 Seasons  Kids' TV
+7761  TV-Y7  3 Seasons  Kids' TV
+
+                                            Description   New\_Date    Year  \textbackslash{}
+4     A brilliant group of students become card-coun{\ldots} 2020-01-01  2020.0
+7     After one of his high school students attacks {\ldots} 2019-11-01  2019.0
+111   Paw-esome tales abound when singing furry frie{\ldots} 2020-10-01  2020.0
+170   A ruthless corporate headhunter battles his ri{\ldots} 2019-12-15  2019.0
+232   After reckless teens kill an Amish child, a pr{\ldots} 2011-10-01  2011.0
+{\ldots}                                                 {\ldots}        {\ldots}     {\ldots}
+7668  The reality show "WOW!" engages the Winx in th{\ldots} 2017-06-16  2017.0
+7717  Friends Mai, Oto and Vik's games at the park b{\ldots} 2018-06-23  2018.0
+7719  With the mind of a human being, and the body o{\ldots} 2018-06-07  2018.0
+7758  Fading music biz veteran Zé realizes he has ju{\ldots} 2019-02-22  2019.0
+7761  Teen surfer Zak Storm is mysteriously transpor{\ldots} 2018-09-13  2018.0
+
+      Minutes     Unit
+4         123      min
+7         119      min
+111         2  Seasons
+170       110      min
+232        95      min
+{\ldots}       {\ldots}      {\ldots}
+7668        2  Seasons
+7717        1   Season
+7719        1   Season
+7758        2  Seasons
+7761        3  Seasons
+
+[322 rows x 15 columns]
+\end{Verbatim}
+\end{tcolorbox}
+        
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
